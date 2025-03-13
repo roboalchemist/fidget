@@ -1,0 +1,87 @@
+2025-03-10 17:49:39,583 - INFO - Added interval option 1: 1 second
+2025-03-10 17:49:39,583 - INFO - Added interval option 2: 2 seconds
+2025-03-10 17:49:39,583 - INFO - Added interval option 3: 5 seconds
+2025-03-10 17:49:39,584 - INFO - Added interval option 4: 10 seconds
+2025-03-10 17:49:39,584 - INFO - Added interval option 5: 30 seconds
+2025-03-10 17:49:39,584 - INFO - Added interval option 6: 1 minute
+2025-03-10 17:49:39,584 - INFO - Added interval option 7: 2 minutes
+2025-03-10 17:49:39,584 - INFO - Added interval option 8: 5 minutes
+2025-03-10 17:49:39,584 - INFO - Added interval option 9: 10 minutes
+2025-03-10 17:49:39,584 - INFO - Created Tempo menu with 9 options
+2025-03-10 17:49:39,584 - INFO - Added range option 1: Tiny (1 pixel)
+2025-03-10 17:49:39,584 - INFO - Added range option 2: Small (2 pixels)
+2025-03-10 17:49:39,584 - INFO - Added range option 3: Medium (5 pixels)
+2025-03-10 17:49:39,584 - INFO - Added range option 4: Large (10 pixels)
+2025-03-10 17:49:39,584 - INFO - Added range option 5: Extra Large (20 pixels)
+2025-03-10 17:49:39,584 - INFO - Created Range menu with 5 options
+2025-03-10 17:49:39,585 - INFO - Added Tempo submenu with 9 options
+2025-03-10 17:49:39,585 - INFO -   Tempo menu item 1: 1 second
+2025-03-10 17:49:39,585 - INFO -   Tempo menu item 2: 2 seconds
+2025-03-10 17:49:39,585 - INFO -   Tempo menu item 3: 5 seconds
+2025-03-10 17:49:39,585 - INFO -   Tempo menu item 4: 10 seconds
+2025-03-10 17:49:39,585 - INFO -   Tempo menu item 5: 30 seconds
+2025-03-10 17:49:39,585 - INFO -   Tempo menu item 6: 1 minute
+2025-03-10 17:49:39,585 - INFO -   Tempo menu item 7: 2 minutes
+2025-03-10 17:49:39,585 - INFO -   Tempo menu item 8: 5 minutes
+2025-03-10 17:49:39,585 - INFO -   Tempo menu item 9: 10 minutes
+2025-03-10 17:49:39,585 - INFO - Added Range submenu with 5 options
+2025-03-10 17:49:39,585 - INFO -   Range menu item 1: Tiny (1 pixel)
+2025-03-10 17:49:39,585 - INFO -   Range menu item 2: Small (2 pixels)
+2025-03-10 17:49:39,585 - INFO -   Range menu item 3: Medium (5 pixels)
+2025-03-10 17:49:39,585 - INFO -   Range menu item 4: Large (10 pixels)
+2025-03-10 17:49:39,585 - INFO -   Range menu item 5: Extra Large (20 pixels)
+2025-03-10 17:49:39,615 - INFO - Tempo menu has 9 items
+2025-03-10 17:49:39,615 - INFO - Main menu items: ['Idle', 'Start Fidget', 'Stop Fidget', 'Tempo', 'Range', 'Quit Fidget']
+2025-03-10 17:49:39,615 - INFO - Jiggling started with interval 1 seconds
+2025-03-10 17:49:40,666 - INFO - Attempting to move mouse by delta: dx=0, dy=1 (using Range setting: 1)
+2025-03-10 17:49:40,729 - INFO - Mouse movement: Intended [dx=0, dy=1, dist=1.00] vs Actual [dx=137, dy=-52, dist=146.54]
+2025-03-10 17:49:40,730 - INFO - Moved mouse from (2068, 834) to (2205, 782) on screen 0
+2025-03-10 17:49:40,730 - WARNING - Mouse moved more than expected! Range: 1, Actual: dx=137, dy=-52
+2025-03-10 17:49:41,715 - INFO - Attempting to move mouse by delta: dx=0, dy=-1 (using Range setting: 1)
+2025-03-10 17:49:41,755 - INFO - Mouse movement: Intended [dx=0, dy=-1, dist=1.00] vs Actual [dx=0, dy=0, dist=0.00]
+2025-03-10 17:49:41,755 - INFO - Moved mouse from (1839, 589) to (1839, 589) on screen 0
+2025-03-10 17:49:41,755 - WARNING - Mouse position did not change after jiggle attempt!
+2025-03-10 17:49:42,766 - INFO - Attempting to move mouse by delta: dx=1, dy=1 (using Range setting: 1)
+2025-03-10 17:49:42,808 - INFO - Mouse movement: Intended [dx=1, dy=1, dist=1.41] vs Actual [dx=-4, dy=-3, dist=5.00]
+2025-03-10 17:49:42,808 - INFO - Moved mouse from (889, 1264) to (885, 1261) on screen 0
+2025-03-10 17:49:42,808 - WARNING - Mouse moved more than expected! Range: 1, Actual: dx=-4, dy=-3
+2025-03-10 17:49:43,815 - INFO - Attempting to move mouse by delta: dx=0, dy=1 (using Range setting: 1)
+2025-03-10 17:49:43,851 - INFO - Mouse movement: Intended [dx=0, dy=1, dist=1.00] vs Actual [dx=16, dy=10, dist=18.87]
+2025-03-10 17:49:43,851 - INFO - Moved mouse from (2677, 1430) to (2693, 1440) on screen 0
+2025-03-10 17:49:43,851 - WARNING - Mouse moved more than expected! Range: 1, Actual: dx=16, dy=10
+2025-03-10 17:49:44,825 - INFO - Attempting to move mouse by delta: dx=1, dy=0 (using Range setting: 1)
+2025-03-10 17:49:44,864 - INFO - Mouse movement: Intended [dx=1, dy=0, dist=1.00] vs Actual [dx=0, dy=0, dist=0.00]
+2025-03-10 17:49:44,864 - INFO - Moved mouse from (2734, -34) to (2734, -34) on screen 1
+2025-03-10 17:49:44,864 - WARNING - Mouse position did not change after jiggle attempt!
+2025-03-10 17:49:45,823 - INFO - Attempting to move mouse by delta: dx=-1, dy=-1 (using Range setting: 1)
+2025-03-10 17:49:45,860 - INFO - Mouse movement: Intended [dx=-1, dy=-1, dist=1.41] vs Actual [dx=0, dy=-2170, dist=2170.00]
+2025-03-10 17:49:45,860 - INFO - Moved mouse from (3440, 1805) to (3440, -365) on screen 0
+2025-03-10 17:49:45,860 - WARNING - Mouse moved more than expected! Range: 1, Actual: dx=0, dy=-2170
+2025-03-10 17:49:46,823 - INFO - Attempting to move mouse by delta: dx=1, dy=-1 (using Range setting: 1)
+2025-03-10 17:49:46,866 - INFO - Mouse movement: Intended [dx=1, dy=-1, dist=1.41] vs Actual [dx=58, dy=0, dist=58.00]
+2025-03-10 17:49:46,866 - INFO - Moved mouse from (2232, 1440) to (2290, 1440) on screen 0
+2025-03-10 17:49:46,866 - WARNING - Mouse moved more than expected! Range: 1, Actual: dx=58, dy=0
+2025-03-10 17:49:47,824 - INFO - Attempting to move mouse by delta: dx=1, dy=0 (using Range setting: 1)
+2025-03-10 17:49:47,864 - INFO - Mouse movement: Intended [dx=1, dy=0, dist=1.00] vs Actual [dx=-32, dy=68, dist=75.15]
+2025-03-10 17:49:47,864 - INFO - Moved mouse from (2797, 1004) to (2765, 1072) on screen 0
+2025-03-10 17:49:47,864 - WARNING - Mouse moved more than expected! Range: 1, Actual: dx=-32, dy=68
+2025-03-10 17:49:48,831 - INFO - Attempting to move mouse by delta: dx=0, dy=1 (using Range setting: 1)
+2025-03-10 17:49:48,875 - INFO - Mouse movement: Intended [dx=0, dy=1, dist=1.00] vs Actual [dx=0, dy=0, dist=0.00]
+2025-03-10 17:49:48,875 - INFO - Moved mouse from (2709, 1440) to (2709, 1440) on screen 0
+2025-03-10 17:49:48,875 - WARNING - Mouse position did not change after jiggle attempt!
+2025-03-10 17:49:49,824 - INFO - Attempting to move mouse by delta: dx=-1, dy=-1 (using Range setting: 1)
+2025-03-10 17:49:49,861 - INFO - Mouse movement: Intended [dx=-1, dy=-1, dist=1.41] vs Actual [dx=148, dy=-20, dist=149.35]
+2025-03-10 17:49:49,861 - INFO - Moved mouse from (2760, -75) to (2908, -95) on screen 1
+2025-03-10 17:49:49,861 - WARNING - Mouse moved more than expected! Range: 1, Actual: dx=148, dy=-20
+2025-03-10 17:49:50,823 - INFO - Attempting to move mouse by delta: dx=1, dy=-1 (using Range setting: 1)
+2025-03-10 17:49:50,863 - INFO - Mouse movement: Intended [dx=1, dy=-1, dist=1.41] vs Actual [dx=7, dy=192, dist=192.13]
+2025-03-10 17:49:50,863 - INFO - Moved mouse from (4441, 623) to (4448, 815) on screen 2
+2025-03-10 17:49:50,863 - WARNING - Mouse moved more than expected! Range: 1, Actual: dx=7, dy=192
+2025-03-10 17:49:51,823 - INFO - Attempting to move mouse by delta: dx=0, dy=1 (using Range setting: 1)
+2025-03-10 17:49:51,865 - INFO - Mouse movement: Intended [dx=0, dy=1, dist=1.00] vs Actual [dx=0, dy=0, dist=0.00]
+2025-03-10 17:49:51,865 - INFO - Moved mouse from (4530, 551) to (4530, 551) on screen 2
+2025-03-10 17:49:51,865 - WARNING - Mouse position did not change after jiggle attempt!
+2025-03-10 17:49:52,824 - INFO - Attempting to move mouse by delta: dx=0, dy=1 (using Range setting: 1)
+2025-03-10 17:49:52,868 - INFO - Mouse movement: Intended [dx=0, dy=1, dist=1.00] vs Actual [dx=0, dy=0, dist=0.00]
+2025-03-10 17:49:52,868 - INFO - Moved mouse from (4525, 867) to (4525, 867) on screen 2
+2025-03-10 17:49:52,868 - WARNING - Mouse position did not change after jiggle attempt!
