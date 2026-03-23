@@ -1,73 +1,73 @@
 # Fidget
 
-Fidget is a simple macOS application that prevents your screen from sleeping by periodically moving the mouse cursor slightly. It runs in the background with a system tray icon, allowing you to control when the jiggling is active.
+Fidget is a macOS menu bar app that prevents screen sleep by periodically moving the mouse cursor or running `caffeinate`. It runs as a `LSUIElement` (no Dock icon), showing only in the menu bar.
 
 ## Features
 
-- Runs in the system tray/menu bar
-- Periodically moves the mouse cursor by a small amount to prevent screen sleep
-- Configurable jiggle interval (15s, 30s, 1m, 2m, 5m)
-- Start/stop jiggling with a single click
-- Minimal resource usage
+- Lives in the menu bar — no Dock icon
+- Prevents display and idle sleep via `caffeinate -d -i` (default) or mouse movement
+- Configurable jiggle interval: 5s, 30s, 55s, 4m, 9m, 14m, 29m, 59m
+- Configurable movement range: 0 (caffeinate-only), 1px, 2px, 5px, 10px, 20px
+- Countdown timer shown in menu
+- Start/stop from the menu bar
 
 ## Installation
 
 ### Option 1: Install from DMG
 
-1. Download the latest `Fidget-1.0.0.dmg` file from the `dist` directory
-2. Open the DMG file
-3. Drag the Fidget app to your Applications folder
-4. Open the app from your Applications folder
+1. Download `Fidget-1.0.0.dmg` from the `dist/` directory
+2. Open the DMG and drag Fidget to your Applications folder
+3. Launch Fidget from Applications
 
 ### Option 2: Run from source
 
-1. Clone this repository
-2. Create a virtual environment: `python3 -m venv venv`
-3. Activate the virtual environment: `source venv/bin/activate`
-4. Install dependencies: `pip install pystray pillow`
-5. Run the script: `python fidget.py`
+```bash
+git clone <repo>
+cd fidget
+python3 -m venv venv
+source venv/bin/activate
+pip install PyQt6==6.6.1
+python fidget.py
+```
 
 ### Option 3: Use the wrapper script
 
-1. Clone this repository
-2. Make the wrapper script executable: `chmod +x fidget_wrapper.sh`
-3. Run the wrapper script: `./fidget_wrapper.sh`
+```bash
+./fidget_wrapper.sh   # auto-creates venv, installs PyQt6, starts app
+```
 
-## Building from Source
-
-To build the app as a standalone macOS application:
+## Building
 
 ```bash
-# For development build (references original script)
-./build_app.sh -d
-
-# For production build (standalone app)
-./build_app.sh
-
-# To run the app after building
-./build_app.sh -r
+./build_app.sh        # production build → dist/Fidget.app + dist/Fidget-1.0.0.dmg
+./build_app.sh -d     # dev/alias build (references original script)
+./build_app.sh -r     # build and immediately run
 ```
 
 ## Usage
 
-1. Launch the app
-2. Look for the Fidget icon in your menu bar
-3. Click on the icon to access the menu
-4. Select "Start Jiggling" to begin preventing screen sleep
-5. Select "Stop Jiggling" to pause the functionality
-6. Choose a different interval from the "Set Interval" submenu if desired
-7. Select "Quit" to exit the application
+Launch the app and click the Fidget icon in the menu bar:
+
+- **Start Fidget** / **Stop Fidget** — toggle sleep prevention
+- **Tempo** — set how often the jiggle fires (default: 4m)
+- **Range** — set mouse movement distance; 0 = caffeinate only, no mouse move (default: 5px)
+- **Quit Fidget** — exit
+
+## Command-Line Options
+
+```
+--interval INT    Jiggle interval in seconds (default: 240)
+--distance INT    Max mouse movement in pixels (default: 5)
+--verbose         Log to /tmp/fidget.log + stderr
+--force_mouse     Force mouse movement instead of caffeinate
+```
 
 ## Requirements
 
-- macOS 10.14 or later
-- Python 3.6 or later (for running from source)
+- macOS 10.14+
+- Python 3.9+ (3.9.18 recommended, see `.python-version`)
+- PyQt6 6.6.1
 
-## License
+## Sleep Prevention
 
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Acknowledgements
-
-- Uses [pystray](https://github.com/moses-palmer/pystray) for system tray functionality
-- Uses [Pillow](https://python-pillow.org/) for image processing 
+By default, Fidget runs `caffeinate -d -i` as a background process to block display and idle sleep. Mouse movement is also performed unless Range is set to 0. Use `--force_mouse` to rely solely on mouse movement instead of caffeinate.
