@@ -1,35 +1,31 @@
 #!/bin/bash
 
 # Fidget wrapper script
-# This script runs the Fidget app directly using Python
+# Builds Fidget from source (incrementally) and runs it in the background.
+# Any arguments are passed through, e.g. ./fidget_wrapper.sh --verbose --interval 30
 
 # Get the directory where this script is located
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+cd "$SCRIPT_DIR" || exit 1
 
-# Check if virtual environment exists
-if [ ! -d "$SCRIPT_DIR/venv" ]; then
-    echo "Creating virtual environment..."
-    python3 -m venv "$SCRIPT_DIR/venv"
-    
-    # Activate virtual environment
-    source "$SCRIPT_DIR/venv/bin/activate"
-    
-    # Upgrade pip
-    pip install --upgrade pip
-    
-    # Install dependencies
-    pip install PyQt6
-else
-    # Activate virtual environment
-    source "$SCRIPT_DIR/venv/bin/activate"
-fi
+echo "Building Fidget..."
+swift build --product Fidget || exit 1
+FIDGET_BIN="$(swift build --show-bin-path)/Fidget"
 
-# Run the script
+# Run the app (from the repository root, so Resources/fidget.png is found)
 echo "Starting Fidget..."
-python "$SCRIPT_DIR/fidget.py" "$@" &
+"$FIDGET_BIN" "$@" &
+FIDGET_PID=$!
 
 # Wait a moment to ensure the app has started
 sleep 1
 
-echo "Fidget is running in the background."
-echo "Look for the Fidget icon in your menu bar." 
+if ! kill -0 "$FIDGET_PID" 2>/dev/null; then
+    wait "$FIDGET_PID"
+    STATUS=$?
+    echo "Fidget exited immediately (status $STATUS)."
+    exit "$STATUS"
+fi
+
+echo "Fidget is running in the background (PID $FIDGET_PID)."
+echo "Look for the Fidget icon in your menu bar."
