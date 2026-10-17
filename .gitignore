@@ -8,12 +8,5 @@ xcuserdata/
 build/
 dist/
 
-# Test tooling (pytest)
-__pycache__/
-*.pyc
-.pytest_cache/
-.venv/
-venv/
-
 # macOS
 .DS_Store

@@ -179,6 +179,9 @@ final class FidgetApp: NSObject, NSApplicationDelegate {
         for action in rangeActions {
             action.state = action.tag == movementRange ? .on : .off
         }
+        let tempoTitle = intervalActions.first { $0.state == .on }?.title ?? "custom \(interval)s"
+        let rangeTitle = rangeActions.first { $0.state == .on }?.title ?? "custom \(movementRange)px"
+        log.info("Menu state - status: '\(statusAction.title)', tempo: '\(tempoTitle)', range: '\(rangeTitle)'")
     }
 
     @objc private func intervalSelected(_ sender: NSMenuItem) {
