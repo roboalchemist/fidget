@@ -114,7 +114,7 @@ swift test_scripts/minimal_mouse_test.swift
 
 ## Related Projects
 
-- **vfidget** — the Verkada workstation variant (keep-awake plus AWS SSO / Chrome login automation for Linux and macOS): [gitea.roboalch.com/roboalchemist/vfidget](https://gitea.roboalch.com/roboalchemist/vfidget) (private). It was split out of this repository on 2026-10-17; fidget itself stays the simple, keep-awake-only app.
+- **vfidget** — an internal downstream variant that adds workstation login automation. It is maintained in a separate private repository and is not published here. Fidget itself stays the simple, keep-awake-only app.
 
 ## Project Layout
 
