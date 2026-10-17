@@ -27,7 +27,7 @@ done
 
 cd "$(dirname "$0")"
 
-VERSION="2.0.0"
+VERSION="2.1.0"
 APP_NAME="Fidget"
 BUILD_DIR="build"
 DIST_DIR="dist"

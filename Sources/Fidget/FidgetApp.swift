@@ -31,10 +31,10 @@ final class FidgetApp: NSObject, NSApplicationDelegate {
         MenuChoice(label: "Extra Large (20 pixels)", value: 20),
     ]
 
-    private let forceMouse: Bool
     private(set) var interval: Int
     private(set) var movementRange: Int
     private(set) var jiggling = false
+    private(set) var caffeinateEnabled: Bool
     private var nextJiggleTime = Date.distantPast
 
     private let caffeinate = Caffeinate()
@@ -45,6 +45,7 @@ final class FidgetApp: NSObject, NSApplicationDelegate {
     private let statusAction: NSMenuItem
     private let startAction: NSMenuItem
     private let stopAction: NSMenuItem
+    private let caffeinateAction: NSMenuItem
     private let quitAction: NSMenuItem
     private var intervalActions: [NSMenuItem] = []
     private var rangeActions: [NSMenuItem] = []
@@ -54,12 +55,13 @@ final class FidgetApp: NSObject, NSApplicationDelegate {
     private var checkedAccessibility = false
 
     init(options: Options) {
-        forceMouse = options.forceMouse
         interval = options.interval
         movementRange = options.distance
+        caffeinateEnabled = !options.forceMouse
         statusAction = NSMenuItem(title: "Idle", action: nil, keyEquivalent: "")
         startAction = NSMenuItem(title: "Start Fidget", action: #selector(FidgetApp.startJiggling), keyEquivalent: "")
         stopAction = NSMenuItem(title: "Stop Fidget", action: #selector(FidgetApp.stopJiggling), keyEquivalent: "")
+        caffeinateAction = NSMenuItem(title: "Caffeinate", action: #selector(FidgetApp.toggleCaffeinate), keyEquivalent: "")
         quitAction = NSMenuItem(title: "Quit Fidget", action: #selector(FidgetApp.quit), keyEquivalent: "")
         super.init()
     }
@@ -104,7 +106,7 @@ final class FidgetApp: NSObject, NSApplicationDelegate {
         log.info("Created Range menu with \(Self.ranges.count) options")
 
         statusAction.isEnabled = false
-        for action in [startAction, stopAction, quitAction] {
+        for action in [startAction, stopAction, caffeinateAction, quitAction] {
             action.target = self
         }
 
@@ -119,6 +121,7 @@ final class FidgetApp: NSObject, NSApplicationDelegate {
         trayMenu.addItem(.separator())
         trayMenu.addItem(tempoItem)
         trayMenu.addItem(rangeItem)
+        trayMenu.addItem(caffeinateAction)
         trayMenu.addItem(.separator())
         trayMenu.addItem(quitAction)
 
@@ -179,9 +182,10 @@ final class FidgetApp: NSObject, NSApplicationDelegate {
         for action in rangeActions {
             action.state = action.tag == movementRange ? .on : .off
         }
+        caffeinateAction.state = caffeinateEnabled ? .on : .off
         let tempoTitle = intervalActions.first { $0.state == .on }?.title ?? "custom \(interval)s"
         let rangeTitle = rangeActions.first { $0.state == .on }?.title ?? "custom \(movementRange)px"
-        log.info("Menu state - status: '\(statusAction.title)', tempo: '\(tempoTitle)', range: '\(rangeTitle)'")
+        log.info("Menu state - status: '\(statusAction.title)', tempo: '\(tempoTitle)', range: '\(rangeTitle)', caffeinate: \(caffeinateEnabled ? "on" : "off")")
     }
 
     @objc private func intervalSelected(_ sender: NSMenuItem) {
@@ -190,6 +194,29 @@ final class FidgetApp: NSObject, NSApplicationDelegate {
 
     @objc private func rangeSelected(_ sender: NSMenuItem) {
         setMovementRange(sender.tag)
+    }
+
+    @objc private func toggleCaffeinate() {
+        setCaffeinateEnabled(!caffeinateEnabled)
+    }
+
+    /// Enables or disables the `caffeinate` child process, independent of jiggling.
+    /// Range 0 needs caffeinate, so it is re-enabled when the range is 0.
+    func setCaffeinateEnabled(_ enabled: Bool) {
+        guard enabled != caffeinateEnabled else { return }
+        caffeinateEnabled = enabled
+        log.info("Caffeinate \(enabled ? "enabled" : "disabled")")
+        if jiggling {
+            if enabled {
+                caffeinate.start()
+            } else {
+                caffeinate.stop()
+                if movementRange == 0 {
+                    log.warning("Range is 0 and caffeinate is disabled - sleep prevention is inactive")
+                }
+            }
+        }
+        updateMenuState()
     }
 
     @objc private func quit() {
@@ -203,15 +230,16 @@ final class FidgetApp: NSObject, NSApplicationDelegate {
         jiggling = true
         nextJiggleTime = Date().addingTimeInterval(TimeInterval(interval))
 
-        // caffeinate is used unless mouse movement was forced and the range is non-zero.
-        if movementRange == 0 || !forceMouse {
+        // Caffeinate is on by default; --force_mouse starts with it off, and the
+        // menu toggle can change it at any time.
+        if caffeinateEnabled {
             caffeinate.start()
         }
 
         jiggleTimer = scheduleTimer(every: TimeInterval(interval), selector: #selector(jiggleTimerFired))
         countdownTimer = scheduleTimer(every: 1, selector: #selector(updateCountdown))
 
-        log.info("Jiggling started with interval \(interval) seconds and range \(movementRange) pixels")
+        log.info("Jiggling started with interval \(interval) seconds, range \(movementRange) pixels, caffeinate \(caffeinateEnabled ? "on" : "off")")
         updateMenuState()
     }
 
@@ -243,10 +271,12 @@ final class FidgetApp: NSObject, NSApplicationDelegate {
     func setMovementRange(_ pixels: Int) {
         log.info("Setting movement range to \(pixels) pixels")
         movementRange = pixels
-        if pixels == 0 && jiggling {
-            caffeinate.start()
-        } else if pixels > 0 && forceMouse {
-            caffeinate.stop()
+        // Range 0 means "no mouse movement", so caffeinate is the only way to prevent sleep.
+        if pixels == 0 && !caffeinateEnabled {
+            caffeinateEnabled = true
+            if jiggling {
+                caffeinate.start()
+            }
         }
         updateMenuState()
     }
@@ -273,7 +303,7 @@ final class FidgetApp: NSObject, NSApplicationDelegate {
     /// or nudges the mouse by a small random offset when mouse movement is in use.
     @discardableResult
     func performJiggle() -> Bool {
-        if movementRange == 0 || !forceMouse {
+        if caffeinateEnabled {
             if caffeinate.hasExited {
                 log.warning("Caffeinate process exited unexpectedly, restarting...")
                 caffeinate.start()
@@ -286,7 +316,7 @@ final class FidgetApp: NSObject, NSApplicationDelegate {
         }
 
         if movementRange == 0 {
-            log.warning("Range is 0 but no caffeinate available - sleep prevention may not work")
+            log.warning("Range is 0 and caffeinate is unavailable - sleep prevention may not work")
             nextJiggleTime = Date().addingTimeInterval(TimeInterval(interval))
             return true
         }

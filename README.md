@@ -2,12 +2,13 @@
 
 Fidget is a macOS menu bar app that prevents screen sleep. By default it runs `caffeinate -d -i` in the background; it can instead nudge the mouse cursor at a configurable tempo. It runs as a `LSUIElement` (no Dock icon), showing only in the menu bar.
 
-Version 2.0 is a native Swift/AppKit rewrite of the original Python/PyQt6 app, with the same menu, options, and behavior.
+Version 2.1 is a native Swift/AppKit rewrite of the original Python/PyQt6 app, with the same menu and options plus an explicit caffeinate toggle.
 
 ## Features
 
 - Lives in the menu bar — no Dock icon
 - Prevents display and idle sleep via `caffeinate -d -i` (default) or mouse movement
+- **Caffeinate** menu toggle — turn the `caffeinate` process on/off independently of jiggling (on by default)
 - Configurable jiggle interval: 5s, 30s, 55s, 4m, 9m, 14m, 29m, 59m (default 4m)
 - Configurable movement range: 0 (caffeinate-only), 1px, 2px, 5px, 10px, 20px (default 5px)
 - Live countdown shown in the menu ("Fidget in: 3m27s")
@@ -25,7 +26,7 @@ Version 2.0 is a native Swift/AppKit rewrite of the original Python/PyQt6 app, w
 
 Build the installer with `./build_app.sh` (see [Building](#building)), then:
 
-1. Open `dist/Fidget-2.0.0.dmg`
+1. Open `dist/Fidget-2.1.0.dmg`
 2. Drag Fidget to your Applications folder
 3. Launch Fidget from Applications
 
@@ -53,7 +54,7 @@ swift run Fidget --verbose --interval 30 --distance 10
 ## Building
 
 ```bash
-./build_app.sh        # production build → dist/Fidget.app + dist/Fidget-2.0.0.dmg
+./build_app.sh        # production build → dist/Fidget.app + dist/Fidget-2.1.0.dmg
 ./build_app.sh -d     # dev build (debug, native arch, no DMG)
 ./build_app.sh -r     # build and immediately run
 ```
@@ -71,9 +72,10 @@ Launch the app and click the Fidget icon in the menu bar:
 - **Start Fidget** / **Stop Fidget** — toggle sleep prevention
 - **Tempo** — set how often the jiggle fires (default: 4m)
 - **Range** — set mouse movement distance; 0 = caffeinate only, no mouse move (default: 5px)
+- **Caffeinate** — checkbox that starts/stops the `caffeinate` process immediately (default: on; `--force_mouse` starts it off). Turning it off falls back to mouse movement; with Range 0 it also re-enables automatically, since jiggling cannot prevent sleep without a range.
 - **Quit Fidget** — exit
 
-The active Tempo and Range choices are marked with a checkmark.
+The active Tempo and Range choices and the Caffeinate checkbox are marked with a checkmark.
 
 ## Command-Line Options
 
@@ -82,19 +84,23 @@ The active Tempo and Range choices are marked with a checkmark.
 --interval INT    Jiggle interval in seconds (default: 240 = 4m)
 --distance INT    Max mouse movement in pixels, 0 = caffeinate only (default: 5)
 --verbose         Log to /tmp/fidget.log and stderr (default: warnings only)
---force_mouse     Use mouse movement instead of caffeinate
+--force_mouse     Start with caffeinate off (mouse movement only)
 ```
 
 A value set with `--interval` that is not in the Tempo menu still works; the menu then shows no checkmark until you pick one of its options. Unrecognized or invalid arguments print usage and exit with status 2.
 
 ## Sleep Prevention
 
-By default, Fidget runs `caffeinate -d -i -w <fidget pid>` as a background process, which blocks display (`-d`) and idle (`-i`) sleep. The `-w` flag makes caffeinate exit if Fidget dies, so the sleep assertion is never orphaned. If caffeinate exits unexpectedly, the next jiggle restarts it. Stopping Fidget (menu, `SIGINT`, or `SIGTERM`) terminates caffeinate.
+Fidget runs `caffeinate -d -i -w <fidget pid>` as a background process, which blocks display (`-d`) and idle (`-i`) sleep. The `-w` flag makes caffeinate exit if Fidget dies, so the sleep assertion is never orphaned. If caffeinate exits unexpectedly, the next jiggle restarts it. Stopping Fidget (menu, `SIGINT`, or `SIGTERM`) terminates caffeinate.
 
-Mouse movement is used when:
+The **Caffeinate** menu item controls this process explicitly:
 
-- `--force_mouse` is passed and Range is greater than 0, or
-- caffeinate is unavailable.
+- Checked (default): caffeinate runs and the cursor is left alone.
+- Unchecked: caffeinate stops; mouse movement takes over (Range must be greater than 0).
+- `--force_mouse` starts with the item unchecked, preserving the old "mouse only" behavior.
+- Selecting Range 0 (`0 - Script Awake`) re-checks it, because a zero range disables mouse movement.
+
+Each jiggle posts a `mouseMoved` event at the HID event tap with a random offset within the configured range, so the system treats it as activity. Posting synthetic events requires the Accessibility permission (System Settings → Privacy & Security → Accessibility); Fidget prompts the first time it needs it. In caffeinate mode no permission is needed.
 
 Each jiggle posts a `mouseMoved` event at the HID event tap with a random offset within the configured range, so the system treats it as activity. Posting synthetic events requires the Accessibility permission (System Settings → Privacy & Security → Accessibility); Fidget prompts the first time it needs it. In caffeinate mode no permission is needed.
 

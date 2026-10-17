@@ -4,7 +4,7 @@
 
 Fidget is a macOS menu bar app that prevents screen sleep by periodically running `caffeinate` or moving the mouse cursor. It runs as a `LSUIElement` (no Dock icon), showing only in the menu bar.
 
-Version 2.0 is a native Swift/AppKit rewrite of the original Python/PyQt6 implementation. This file documents the Swift codebase; `worklog.md` retains the earlier Python history.
+Version 2.1 is a native Swift/AppKit rewrite of the original Python/PyQt6 implementation. This file documents the Swift codebase; `worklog.md` retains the earlier Python history.
 
 ---
 
@@ -84,11 +84,12 @@ Stop Fidget        [hidden while stopped]
 Tempo ▶            [5s, 30s, 55s, 4m✓, 9m, 14m, 29m, 59m]
 Range ▶            [0 - Script Awake, Tiny (1 pixel), Small (2 pixels),
                     Medium (5 pixels)✓, Large (10 pixels), Extra Large (20 pixels)]
+✓ Caffeinate       [toggle: starts/stops the caffeinate process]
 ─────────────
 Quit Fidget
 ```
 
-Menu items are retained in `intervalActions` / `rangeActions` and selection is tracked with `NSMenuItem.state` (AppKit renders `.on` as a checkmark). `autoenablesItems` is disabled so items stay enabled regardless of selector resolution.
+Menu items are retained in `intervalActions` / `rangeActions` and selection is tracked with `NSMenuItem.state` (AppKit renders `.on` as a checkmark). `caffeinateAction` is a checkbox backed by `caffeinateEnabled`. `autoenablesItems` is disabled so items stay enabled regardless of selector resolution.
 
 The status item icon is loaded from the bundle (`fidget.png`), then next to the executable, then `Resources/fidget.png` in the working directory — the last case makes `swift run` from the repo root work. The image is resized to 18×18 and marked `isTemplate` so macOS tints it for light/dark menu bars.
 
@@ -109,7 +110,13 @@ Both are added to `RunLoop.main` in `.common` mode so the countdown keeps updati
 
 `stop()` sends SIGTERM, waits up to 1 second, then SIGKILLs. `hasExited` detects an unexpected death; `performJiggle()` restarts caffeinate on the next tick when that happens.
 
-`startJiggling()` starts caffeinate unless mouse movement was requested (`--force_mouse`) with a non-zero range. `setMovementRange(0)` starts caffeinate when running; switching away from 0 with `--force_mouse` stops it.
+`caffeinateEnabled` is the user-facing toggle (`caffeinateAction`, the "Caffeinate" menu item):
+
+- Default: on. `--force_mouse` starts it off, preserving the old "mouse only" behavior.
+- `setCaffeinateEnabled(_:)` starts or stops the process immediately when running, and updates the checkbox.
+- While enabled, caffeinate is the sleep-prevention mechanism and the cursor is left alone. When disabled, the jiggle moves the mouse (Range must be > 0).
+- `setMovementRange(0)` re-enables caffeinate, because a zero range can't move the cursor; turning caffeinate off at Range 0 logs a "sleep prevention is inactive" warning.
+- `startJiggling()` starts caffeinate iff the toggle is on.
 
 ### Mouse movement — `Mouse`
 
@@ -221,6 +228,7 @@ Mouse-movement mode needs the Accessibility permission for the terminal/app; caf
 ## Hard-Won Knowledge
 
 - **Caffeinate must be tied to the app PID** (`-w <pid>`), otherwise a crash leaves an orphaned process holding a sleep assertion.
+- **Caffeinate is now an explicit toggle.** Keep `caffeinateEnabled` as the single source of truth; `performJiggle()` must consult it, and Range 0 must force it on (a zero range cannot jiggle the mouse).
 - **Timers must be in `.common` run loop mode.** In the default mode the countdown freezes while a menu is open.
 - **Menu items need strong references.** Python's PyQt version lost actions to garbage collection; in AppKit, keeping `intervalActions`/`rangeActions` also lets `updateMenuState()` toggle checkmarks.
 - **`NSMenuItem.state` is the checkmark.** No manual "✓ " title prefixing is needed.
@@ -238,5 +246,5 @@ Mouse-movement mode needs the Accessibility permission for the terminal/app; caf
 ## Known Limitations
 
 - The menu has no "custom interval" entry; only CLI-set intervals outside the presets lack a checkmark.
-- Settings are not persisted across launches; defaults (4m / 5px) are used unless CLI flags are passed.
+- Settings are not persisted across launches; defaults (4m / 5px, caffeinate on) are used unless CLI flags are passed.
 - Starting a second instance creates a second menu bar item (each process owns its own `NSStatusItem`).

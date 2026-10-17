@@ -299,3 +299,48 @@ keep-alive scheduler) — more than "fidget", and internal-only.
   cloned with `--branch` from the local path; clone from the remote instead.
 - The `gitea` remote was HTTPS with no cached credentials; switched to SSH on
   port 2222 for non-interactive pushes.
+
+## 2026-10-17 - 2.1.0: explicit Caffeinate toggle
+
+### Summary
+Added a **Caffeinate** checkbox to the menu bar menu. The caffeinate process can
+now be turned on or off independently of jiggling; previously it was implicit
+(on by default, or off with `--force_mouse`).
+
+### Behavior
+- Default: Caffeinate on; the cursor is left alone.
+- Unchecked: caffeinate stops and the jiggle moves the mouse (Range > 0).
+- `--force_mouse` now just starts with the toggle off.
+- Selecting Range `0 - Script Awake` re-enables caffeinate (a zero range cannot
+  move the cursor); unchecking it at Range 0 logs a "sleep prevention is
+  inactive" warning.
+- Toggling while running starts/stops the child process immediately; the
+  checkbox and the verbose `Menu state` log reflect the new state.
+
+### Implementation
+- `FidgetApp.caffeinateEnabled` is the single source of truth; `caffeinateAction`
+  is an `NSMenuItem` with `.state` rendering the checkmark.
+- `startJiggling()` starts caffeinate iff enabled; `performJiggle()` consults the
+  same flag (and still restarts a dead caffeinate process).
+- `setMovementRange(0)` forces `caffeinateEnabled = true`.
+- Removed the now-redundant stored `forceMouse` property (only used for the
+  initial toggle state).
+- Version bumped to 2.1.0.
+
+### Verification
+- `swift build` clean.
+- AX-driven toggle: mark char `✓` → click → process gone, mark cleared, log
+  `Caffeinate disabled`; toggling back restarts caffeinate (new PID) and re-marks.
+- With caffeinate off, the next ticks logged mouse moves (`Attempting to move
+  mouse ...` / `Mouse movement ...`).
+- Selecting Range `0 - Script Awake` while caffeinate was off started a fresh
+  caffeinate process and re-checked the box.
+- `--force_mouse` starts with `caffeinate: off` and no child process, and jiggles.
+- Production bundle rebuilt as `dist/Fidget.app` + `dist/Fidget-2.1.0.dmg`
+  (universal, `CFBundleShortVersionString 2.1.0`).
+
+### Pitfalls
+- `NSMenuItem.state` toggles need `autoenablesItems = false` and a stable
+  reference (`caffeinateAction`), same as the Tempo/Range items.
+- Range 0 and caffeinate-off are mutually exclusive in practice; the code
+  re-enables caffeinate rather than allowing a silent no-op.
