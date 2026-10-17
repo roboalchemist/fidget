@@ -23,8 +23,10 @@ Version 2.0 is a native Swift/AppKit rewrite of the original Python/PyQt6 app, w
 
 ### Option 1: Install from DMG
 
-1. Download `Fidget-2.0.0.dmg` from the `dist/` directory
-2. Open the DMG and drag Fidget to your Applications folder
+Build the installer with `./build_app.sh` (see [Building](#building)), then:
+
+1. Open `dist/Fidget-2.0.0.dmg`
+2. Drag Fidget to your Applications folder
 3. Launch Fidget from Applications
 
 ### Option 2: Run from source
