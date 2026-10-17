@@ -259,3 +259,24 @@ Rewrote the app as a native Swift package (FIDGET-1) and removed the Python, PyQ
 - `NSMenuItem.state` needs the menu to have `autoenablesItems = false` to stay stable while items are hidden/shown.
 - The menu bar icon lookup must include a working-directory candidate, or `swift run` from the repo root shows no icon.
 - Killing caffeinate externally leaves `Process.isRunning == false`; the app must treat that as "restart", not "still managed".
+
+## 2026-10-17 - Split off vfidget (Verkada workstation variant)
+
+### Summary
+The Verkada dual-platform restructure (`linux/` Rust vnuc-login + `macos/` Swift) was split into its own private repository, `gitea.roboalch.com/roboalchemist/vfidget`. Fidget returns to being the simple, keep-awake-only macOS app.
+
+### Background
+The Verkada work landed on Gitea's `main` (`9316e44`, merge of `restructure-linux-rust-macos-swift`) while this repository's GitHub `main` carried the native Swift rewrite. The restructure's Linux side is a workstation login tool (`vnuc-login`: AWS SSO device flow, Chrome/CDP automation, 1Password/namespace/vdev steps, state classification, keep-alive scheduler) — more than "fidget", and Verkada-internal.
+
+### What changed
+1. **New repo `vfidget`** — created private on Gitea from the `restructure-linux-rust-macos-swift` branch, preserving its history. Contains `linux/`, `macos/`, and the `python/` prototype. Its README now explains the split; code-level package/binary names remain `fidget`.
+2. **fidget Gitea main reset** — force-pushed to this repository's simple Swift main (`c66e9ac`). The Verkada restructure is archived as tag `verkada-restructure` (at `9316e44`) and the original `restructure-linux-rust-macos-swift` branch.
+3. **README pointer** — fidget's README links to vfidget as the Verkada variant.
+
+### Verification
+- `vfidget` remote `main` = `6fcbd81`; clone contains `.gitignore`, `README.md`, `linux/`, `macos/`, `python/`.
+- fidget `main` (GitHub and Gitea) = the Swift 2.0.0 app; no Verkada code or history is reachable from it except through the archived tag/branch.
+
+### Pitfalls
+- `tea repos create --owner roboalchemist` returns "not found" for a user-owned repo; omit `--owner` and let it default to the logged-in user.
+- A branch that exists only as a remote-tracking ref (`gitea/...`) cannot be cloned with `--branch` from the local path; clone from the Gitea remote (or create a local branch first).
